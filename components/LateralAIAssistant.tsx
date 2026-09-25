@@ -330,9 +330,16 @@ export const LateralAIAssistant: React.FC = () => {
       };
     }
 
+    if (q.includes('apartamento') || q.includes('apto') || q.includes('casa') || q.includes('sobrado') || q.includes('predio') || q.includes('prédio') || q.includes('condominio')) {
+      return {
+        reply: 'Realizamos pintura residencial e predial com padrão de acabamento cirúrgico: preparação completa, lixamento técnico, recortes sem respingos e aplicação de tintas nobres laváveis (foscas, acetinadas ou semibrilho).\n\nPara garantir a sua data e contratar com quem é Top 3 do Brasil, converse com o Thales diretamente no WhatsApp!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para pintura do meu imóvel',
+      };
+    }
+
     return {
-      reply: 'Como consultor técnico da Thales Pinturas (eleito Top 3 do Brasil ABRAPP/MBPM), nosso compromisso é recorte cirúrgico, zero respingos e obra limpa. Atendemos pintura residencial e predial, revitalização anti-maresia, pedras naturais e limpeza pós-obra.\n\nPara garantir a sua data e contratar com quem entende do assunto, chame o Thales agora no WhatsApp!',
-      suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
+      reply: `Entendido sobre "${query}". Na Thales Pinturas analisamos cada detalhe com rigor técnico para indicar a melhor solução de acabamento e durabilidade para o seu ambiente.\n\nPara receber uma avaliação técnica e agendar sua visita, clique no botão e fale agora diretamente com o Thales no WhatsApp!`,
+      suggestedWhatsApp: `Olá, Thales! Gostaria de falar sobre: ${query}`,
     };
   }
 
@@ -356,7 +363,7 @@ export const LateralAIAssistant: React.FC = () => {
 
     try {
       const abortController = new AbortController();
-      const fetchTimeout = setTimeout(() => abortController.abort(), 9000);
+      const fetchTimeout = setTimeout(() => abortController.abort(), 15000);
 
       const response = await fetch('/api/chat', {
         method: 'POST',

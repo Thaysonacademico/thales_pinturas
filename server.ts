@@ -33,7 +33,7 @@ REGRAS DE OURO (INVIOLÁVEIS):
 5. AUTORIA DO SITE: Se perguntarem quem criou o site, responda: "O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br)."`;
 
 function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; whatsappMessage: string } {
-  const q = (userQuery || '').toLowerCase();
+  const q = (userQuery || '').toLowerCase().trim();
 
   if (q.includes('quem') && (q.includes('fez') || q.includes('criou') || q.includes('desenvolveu') || q.includes('site') || q.includes('programador') || q.includes('dev'))) {
     return {
@@ -105,7 +105,7 @@ function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; w
     };
   }
 
-  if (q.includes('ola') || q.includes('olá') || q.includes('oi') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem') || q.includes('tudo bom')) {
+  if (q.includes('ola') || q.includes('olá') || q.includes('oi') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem') || q.includes('tudo bom') || q === 'oi' || q === 'ola') {
     return {
       reply: 'Olá! Sou o Cobalto, consultor técnico da Thales Pinturas. O Thales é reconhecido entre os Top 3 Melhores Pintores do Brasil (ABRAPP/MBPM). Cuidamos da pintura residencial e predial, revitalização de fachadas, aplicação de pedras e limpeza pós-obra.\n\nQual serviço você gostaria de realizar no seu imóvel?',
       whatsappMessage: 'Olá, Thales! Gostaria de conhecer os serviços da Thales Pinturas',
@@ -119,9 +119,10 @@ function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; w
     };
   }
 
+  // Context-aware dynamic fallback
   return {
-    reply: 'Como consultor técnico da Thales Pinturas (eleito Top 3 do Brasil ABRAPP/MBPM), nosso compromisso é recorte cirúrgico, zero respingos e obra limpa. Atendemos pintura residencial e predial, revitalização anti-maresia, pedras naturais e limpeza pós-obra.\n\nPara garantir a sua data e contratar com quem entende do assunto, chame o Thales agora no WhatsApp!',
-    whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
+    reply: `Entendido sobre "${userQuery || 'sua solicitação'}". Como consultor técnico da Thales Pinturas, avaliamos tecnicamente cada detalhe para indicar o acabamento mais adequado, durável e com acabamento fino.\n\nPara analisarmos seu projeto com precisão e agendarmos sua visita, clique no botão e fale agora diretamente com o Thales no WhatsApp!`,
+    whatsappMessage: `Olá, Thales! Gostaria de falar sobre: ${userQuery || 'um orçamento para o meu imóvel'}`,
   };
 }
 
@@ -188,14 +189,14 @@ async function startServer() {
         });
       }
 
-      // Call Gemini model (gemini-3.1-flash-lite first for instant response, with fallbacks)
+      // Call ultra-fast Gemini model (gemini-flash-lite-latest, gemini-3.5-flash-lite, gemini-3.1-flash-lite)
       let replyText = '';
-      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
+      const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
 
       for (const modelName of candidateModels) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 12000);
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
 
           const response = await ai.models.generateContent({
             model: modelName,
@@ -280,7 +281,7 @@ O usuário pesquisou: "${cleanQuery}"
 }`;
 
       let aiRawOutput = '';
-      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
+      const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
 
       for (const modelName of candidateModels) {
         try {
