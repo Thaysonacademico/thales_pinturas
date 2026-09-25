@@ -130,6 +130,11 @@ export const LateralAIAssistant: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const messagesRef = useRef<ChatMessage[]>(messages);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Check speech recognition support
   useEffect(() => {
@@ -279,8 +284,9 @@ export const LateralAIAssistant: React.FC = () => {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    const newHistory = [...messages, userMessage];
+    const newHistory = [...messagesRef.current, userMessage];
     setMessages(newHistory);
+    messagesRef.current = newHistory;
     setIsLoading(true);
 
     try {
@@ -318,7 +324,11 @@ export const LateralAIAssistant: React.FC = () => {
         whatsappMessage: suggestedWhatsApp,
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => {
+        const updated = [...prev, assistantMessage];
+        messagesRef.current = updated;
+        return updated;
+      });
 
       if (autoSpeak) {
         speakMessage(botReply);
@@ -333,7 +343,11 @@ export const LateralAIAssistant: React.FC = () => {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         whatsappMessage: 'Olá, Thales! Gostaria de um orçamento com a Thales Pinturas',
       };
-      setMessages((prev) => [...prev, fallbackMessage]);
+      setMessages((prev) => {
+        const updated = [...prev, fallbackMessage];
+        messagesRef.current = updated;
+        return updated;
+      });
       if (autoSpeak) {
         speakMessage(fallbackReply);
       }

@@ -42,17 +42,38 @@ function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; w
     };
   }
 
-  if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('custo') || q.includes('valor') || q.includes('orcamento') || q.includes('orçamento') || q.includes('tabela')) {
+  if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('custo') || q.includes('valor') || q.includes('orcamento') || q.includes('orçamento') || q.includes('tabela') || q.includes('m2') || q.includes('metro')) {
     return {
       reply: 'Como consultor técnico da Thales Pinturas, prezo pelo rigor: cada imóvel possui particularidades de substrato, altura, lixamento e tipo de tinta. Por isso, não passamos estimativas genéricas; nosso orçamento é 100% transparente, sem compromisso e personalizado.\n\nO próximo passo é conversar diretamente com o Thales no WhatsApp para agendar sua avaliação técnica!',
       whatsappMessage: 'Olá, Thales! Gostaria de um orçamento personalizado para o meu imóvel',
     };
   }
 
-  if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('semanas') || q.includes('quando entrega')) {
+  if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('semanas') || q.includes('quando entrega') || q.includes('quando comeca') || q.includes('quando começa')) {
     return {
       reply: 'O prazo exato depende da metragem, das etapas de cura e do nível de preparação da alvenaria para garantir acabamento sem marcas e sem retrabalho. O cronograma é alinhado com pontualidade diretamente no orçamento com o profissional.\n\nFale agora com o Thales no WhatsApp para combinarmos o prazo ideal para a sua obra!',
       whatsappMessage: 'Olá, Thales! Gostaria de alinhar prazos e orçamento para o meu imóvel',
+    };
+  }
+
+  if (q.includes('balneario') || q.includes('balneário') || q.includes('itajai') || q.includes('itajaí') || q.includes('brava') || q.includes('navegantes') || q.includes('camboriu') || q.includes('camboriú') || q.includes('litoral') || q.includes('onde atende')) {
+    return {
+      reply: 'Atendemos com frequência e pontualidade Itajaí, Praia Brava, Balneário Camboriú e região! Somos especialistas nas exigências litorâneas, aplicando materiais resistentes à maresia e entregando o acabamento arquitetônico que esses imóveis exigem.\n\nVamos agendar uma visita técnica no seu imóvel? Clique no botão e fale com o Thales no WhatsApp!',
+      whatsappMessage: 'Olá, Thales! Gostaria de agendar uma visita técnica para o meu imóvel na região',
+    };
+  }
+
+  if (q.includes('apartamento') || q.includes('apto') || q.includes('casa') || q.includes('sobrado') || q.includes('predio') || q.includes('prédio') || q.includes('condominio') || q.includes('condomínio') || q.includes('residencial') || q.includes('comercial')) {
+    return {
+      reply: 'Realizamos pintura residencial e predial com padrão de acabamento cirúrgico: lixamento técnico, proteção completa de pisos e esquadrias, recortes sem respingos e aplicação de tintas laváveis de alto padrão (foscas, acetinadas ou semibrilho).\n\nPara garantir a sua data e contratar com quem é Top 3 do Brasil, converse com o Thales diretamente no WhatsApp!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para pintura do meu imóvel',
+    };
+  }
+
+  if (q.includes('cor') || q.includes('cores') || q.includes('paleta') || q.includes('acetinado') || q.includes('fosco') || q.includes('lavavel') || q.includes('lavável') || q.includes('tinta') || q.includes('suvinil') || q.includes('coral')) {
+    return {
+      reply: 'Orientamos a melhor combinação estética e técnica para o seu ambiente: tons claros e acetinados para salas e quartos sofisticados, ou tintas laváveis super-resistentes para áreas de circulação. Também indicamos produtos específicos anti-mofo e de alta durabilidade.\n\nQuer ajuda para escolher o acabamento perfeito? Fale com o Thales no WhatsApp para fechar seu projeto!',
+      whatsappMessage: 'Olá, Thales! Gostaria de consultoria de acabamento e orçamento para o meu imóvel',
     };
   }
 
@@ -77,10 +98,24 @@ function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; w
     };
   }
 
-  if (q.includes('simul') || q.includes('cor') || q.includes('imagem') || q.includes('foto') || q.includes('testar')) {
+  if (q.includes('simul') || q.includes('imagem') || q.includes('foto') || q.includes('testar')) {
     return {
       reply: 'Você pode testar acabamentos no nosso Simulador de Imagens clicando na aba acima! Lá você visualiza tons acetinados, emborrachados ou pedras Moledo em ambientes reais ou enviando foto do seu imóvel.\n\nGostou de alguma combinação? Fale com o Thales no WhatsApp para aplicar na sua parede!',
       whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para pintar meu imóvel com os tons que simulei',
+    };
+  }
+
+  if (q.includes('ola') || q.includes('olá') || q.includes('oi') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem') || q.includes('tudo bom')) {
+    return {
+      reply: 'Olá! Sou o Cobalto, consultor técnico da Thales Pinturas. O Thales é reconhecido entre os Top 3 Melhores Pintores do Brasil (ABRAPP/MBPM). Cuidamos da pintura residencial e predial, revitalização de fachadas, aplicação de pedras e limpeza pós-obra.\n\nQual serviço você gostaria de realizar no seu imóvel?',
+      whatsappMessage: 'Olá, Thales! Gostaria de conhecer os serviços da Thales Pinturas',
+    };
+  }
+
+  if (q.includes('thales') || q.includes('premio') || q.includes('prêmio') || q.includes('abrapp') || q.includes('mbpm') || q.includes('destaque') || q.includes('experiencia') || q.includes('experiência')) {
+    return {
+      reply: 'O Thales possui mais de 10 anos de experiência prática e técnica, tendo sido premiado como Top 3 do Brasil no Prêmio Pintor Destaque Nacional (ABRAPP/MBPM) em Julho de 2026. É a garantia de que sua obra será entregue sem dores de cabeça, com proteção total e acabamento de alto padrão.\n\nQuer garantir sua obra com essa referência técnica? Chame o Thales agora no WhatsApp!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um atendimento para o meu imóvel',
     };
   }
 
@@ -153,21 +188,22 @@ async function startServer() {
         });
       }
 
-      // Call Gemini model (gemini-3.8-flash first as primary text model)
+      // Call Gemini model (gemini-3.1-flash-lite first for instant response, with fallbacks)
       let replyText = '';
-      const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
 
       for (const modelName of candidateModels) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6500);
+          const timeoutId = setTimeout(() => controller.abort(), 12000);
 
           const response = await ai.models.generateContent({
             model: modelName,
             contents: normalizedMessages,
             config: {
               systemInstruction: SYSTEM_INSTRUCTION,
-              temperature: 0.6,
+              temperature: 0.7,
+              maxOutputTokens: 350,
               abortSignal: controller.signal,
             },
           });
@@ -244,7 +280,7 @@ O usuário pesquisou: "${cleanQuery}"
 }`;
 
       let aiRawOutput = '';
-      const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
 
       for (const modelName of candidateModels) {
         try {
