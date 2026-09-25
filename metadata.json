@@ -1,0 +1,8 @@
+{
+  "name": "thalispinturas",
+  "description": "J. Thales Pinturas & Limpeza: Entre os melhores de Itajaí SC. Pintura residencial, predial, pedras naturais e limpeza pós-obra completa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
