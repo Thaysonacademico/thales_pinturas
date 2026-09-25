@@ -32,6 +32,64 @@ REGRAS DE OURO (INVIOLÁVEIS):
 4. NUNCA ESTIME PRAZOS: Prazos dependem da avaliação técnica de cada imóvel e são combinados exclusivamente no orçamento com o Thales.
 5. AUTORIA DO SITE: Se perguntarem quem criou o site, responda: "O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br)."`;
 
+function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; whatsappMessage: string } {
+  const q = (userQuery || '').toLowerCase();
+
+  if (q.includes('quem') && (q.includes('fez') || q.includes('criou') || q.includes('desenvolveu') || q.includes('site') || q.includes('programador') || q.includes('dev'))) {
+    return {
+      reply: 'O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br).\n\nSe você busca excelência técnica em pintura ou limpeza pós-obra com o Thales, fale conosco diretamente no WhatsApp para contratar!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para o meu imóvel',
+    };
+  }
+
+  if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('custo') || q.includes('valor') || q.includes('orcamento') || q.includes('orçamento') || q.includes('tabela')) {
+    return {
+      reply: 'Como consultor técnico da Thales Pinturas, prezo pelo rigor: cada imóvel possui particularidades de substrato, altura, lixamento e tipo de tinta. Por isso, não passamos estimativas genéricas; nosso orçamento é 100% transparente, sem compromisso e personalizado.\n\nO próximo passo é conversar diretamente com o Thales no WhatsApp para agendar sua avaliação técnica!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento personalizado para o meu imóvel',
+    };
+  }
+
+  if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('semanas') || q.includes('quando entrega')) {
+    return {
+      reply: 'O prazo exato depende da metragem, das etapas de cura e do nível de preparação da alvenaria para garantir acabamento sem marcas e sem retrabalho. O cronograma é alinhado com pontualidade diretamente no orçamento com o profissional.\n\nFale agora com o Thales no WhatsApp para combinarmos o prazo ideal para a sua obra!',
+      whatsappMessage: 'Olá, Thales! Gostaria de alinhar prazos e orçamento para o meu imóvel',
+    };
+  }
+
+  if (q.includes('limp') || q.includes('pos obra') || q.includes('pós obra') || q.includes('poeira') || q.includes('vidro') || q.includes('porcelanato') || q.includes('pos-obra')) {
+    return {
+      reply: 'Nossa limpeza pós-obra é minuciosa e técnica: removemos a poeira ultrafina do lixamento, desincrustamos porcelanatos e higienizamos esquadrias e vidros sem causar nenhum arranhão. Entregamos o imóvel 100% pronto para morar ou alugar!\n\nVamos fechar esse serviço junto à sua pintura? Clique abaixo e fale com o Thales no WhatsApp.',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Limpeza pós Obra especializada',
+    };
+  }
+
+  if (q.includes('pedra') || q.includes('moledo') || q.includes('ferro') || q.includes('muro') || q.includes('fachada de pedra') || q.includes('revestimento')) {
+    return {
+      reply: 'A aplicação de pedras naturais (como Moledo, pedra ferro e miracema) traz imponência arquitetônica à fachada. O Thales executa o assentamento rigoroso e aplica resina hidrofugante premium que repele a umidade e não embolora com o tempo.\n\nPara transformar a fachada do seu imóvel, converse com o Thales no WhatsApp e feche seu projeto!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Aplicação de pedras naturais',
+    };
+  }
+
+  if (q.includes('revita') || q.includes('trinca') || q.includes('fissura') || q.includes('infiltr') || q.includes('maresia') || q.includes('emborrachada') || q.includes('umidade')) {
+    return {
+      reply: 'Em Itajaí e cidades litorâneas, revitalização exige tratamento profundo: abrimos e selamos trincas com mastique elástico e aplicamos tinta elastomérica/emborrachada que cria uma membrana impermeável contra a maresia e sol intenso.\n\nProteja o patrimônio do seu imóvel com quem é Top 3 do Brasil. Chame o Thales no WhatsApp para contratar!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Revitalização de fachada e tratamento de trincas',
+    };
+  }
+
+  if (q.includes('simul') || q.includes('cor') || q.includes('imagem') || q.includes('foto') || q.includes('testar')) {
+    return {
+      reply: 'Você pode testar acabamentos no nosso Simulador de Imagens clicando na aba acima! Lá você visualiza tons acetinados, emborrachados ou pedras Moledo em ambientes reais ou enviando foto do seu imóvel.\n\nGostou de alguma combinação? Fale com o Thales no WhatsApp para aplicar na sua parede!',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para pintar meu imóvel com os tons que simulei',
+    };
+  }
+
+  return {
+    reply: 'Como consultor técnico da Thales Pinturas (eleito Top 3 do Brasil ABRAPP/MBPM), nosso compromisso é recorte cirúrgico, zero respingos e obra limpa. Atendemos pintura residencial e predial, revitalização anti-maresia, pedras naturais e limpeza pós-obra.\n\nPara garantir a sua data e contratar com quem entende do assunto, chame o Thales agora no WhatsApp!',
+    whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
+  };
+}
+
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
@@ -48,7 +106,7 @@ async function startServer() {
     },
   });
 
-  // Multi-turn Chat Endpoint
+  // Multi-turn Chat Endpoint for Cobalto AI Agent
   app.post('/api/chat', async (req, res) => {
     try {
       const { messages } = req.body;
@@ -57,46 +115,95 @@ async function startServer() {
         return res.status(400).json({ error: 'Nenhuma mensagem enviada.' });
       }
 
-      // Convert frontend message history into Gemini Content format
-      const formattedContents = messages.map((m: { role: string; content: string }) => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      }));
+      // Extract last user query for fallback intelligence & context
+      const lastUserMsg = [...messages].reverse().find((m: any) => m && m.role === 'user' && m.content);
+      const userLastText = (lastUserMsg?.content || '').trim();
 
-      // Call Gemini model (gemini-3.1-flash-lite for instant responses, with fallback to gemini-3.8-flash)
-      let replyText = '';
-      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
-      let lastError: any = null;
+      // Normalize conversation for Gemini API:
+      // 1. Must alternate role 'user' and 'model'
+      // 2. Must start with 'user'
+      // 3. Drop empty messages
+      const normalizedMessages: { role: 'user' | 'model'; parts: [{ text: string }] }[] = [];
+      for (const m of messages) {
+        if (!m || !m.content || typeof m.content !== 'string' || !m.content.trim()) continue;
+        const role = m.role === 'assistant' || m.role === 'model' ? 'model' : 'user';
+        const text = m.content.trim();
 
-      for (const modelName of candidateModels) {
-        try {
-          const response = await ai.models.generateContent({
-            model: modelName,
-            contents: formattedContents,
-            config: {
-              systemInstruction: SYSTEM_INSTRUCTION,
-              temperature: 0.7,
-            },
+        // Skip leading 'model' messages (e.g. welcome message)
+        if (normalizedMessages.length === 0 && role === 'model') {
+          continue;
+        }
+
+        const prev = normalizedMessages[normalizedMessages.length - 1];
+        if (prev && prev.role === role) {
+          prev.parts[0].text += `\n${text}`;
+        } else {
+          normalizedMessages.push({
+            role,
+            parts: [{ text }],
           });
-          if (response.text) {
-            replyText = response.text;
-            break;
-          }
-        } catch (err: any) {
-          console.warn(`Tentativa com ${modelName} falhou, tentando fallback:`, err?.message || err);
-          lastError = err;
         }
       }
 
-      if (!replyText && lastError) {
-        throw lastError;
+      // If normalized array is empty, inject userLastText
+      if (normalizedMessages.length === 0) {
+        normalizedMessages.push({
+          role: 'user',
+          parts: [{ text: userLastText || 'Olá, como a Thales Pinturas pode me atender?' }],
+        });
       }
 
-      return res.json({ reply: replyText });
+      // Call Gemini model (gemini-3.8-flash first as primary text model)
+      let replyText = '';
+      const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+
+      for (const modelName of candidateModels) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 6500);
+
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: normalizedMessages,
+            config: {
+              systemInstruction: SYSTEM_INSTRUCTION,
+              temperature: 0.6,
+              abortSignal: controller.signal,
+            },
+          });
+          clearTimeout(timeoutId);
+
+          if (response.text && response.text.trim()) {
+            replyText = response.text.trim();
+            break;
+          }
+        } catch (err: any) {
+          console.warn(`Tentativa Cobalto com ${modelName} falhou:`, err?.message || err);
+        }
+      }
+
+      // If Gemini did not return text, use expert technical fallback
+      if (!replyText) {
+        const fallback = generateCobaltoTechnicalFallback(userLastText);
+        replyText = fallback.reply;
+        return res.json({
+          reply: replyText,
+          suggestedWhatsAppMessage: fallback.whatsappMessage,
+        });
+      }
+
+      // Provide dynamic WhatsApp message corresponding to user intent
+      const fallbackData = generateCobaltoTechnicalFallback(userLastText);
+      return res.json({
+        reply: replyText,
+        suggestedWhatsAppMessage: fallbackData.whatsappMessage,
+      });
     } catch (error: any) {
       console.error('Erro na rota /api/chat:', error);
-      return res.status(500).json({
-        error: error.message || 'Erro ao processar mensagem com a inteligência artificial.',
+      const fallback = generateCobaltoTechnicalFallback('');
+      return res.json({
+        reply: fallback.reply,
+        suggestedWhatsAppMessage: fallback.whatsappMessage,
       });
     }
   });

@@ -33,6 +33,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  whatsappMessage?: string;
 }
 
 // Preset simulation surfaces
@@ -111,6 +112,7 @@ export const LateralAIAssistant: React.FC = () => {
   // Audio Speech state
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const recognitionRef = useRef<any>(null);
 
@@ -119,8 +121,9 @@ export const LateralAIAssistant: React.FC = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Olá! Sou o Cobalto, agente especialista da Thales Pinturas. O Thales foi eleito Top 3 do Brasil pela ABRAPP/MBPM. Como posso te orientar tecnicamente sobre seu imóvel hoje?',
+        'Olá! Sou o Cobalto, consultor técnico especialista da Thales Pinturas. O Thales foi eleito Top 3 do Brasil pela ABRAPP/MBPM. Como posso te orientar tecnicamente sobre seu imóvel hoje?',
       timestamp: 'Agora',
+      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
     },
   ]);
   const [input, setInput] = useState('');
@@ -292,31 +295,48 @@ export const LateralAIAssistant: React.FC = () => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}`);
+      let botReply = '';
+      let suggestedWhatsApp = 'Olá, Thales! Gostaria de um orçamento para o meu imóvel';
+
+      if (response.ok) {
+        const data = await response.json();
+        botReply = data.reply || '';
+        if (data.suggestedWhatsAppMessage) {
+          suggestedWhatsApp = data.suggestedWhatsAppMessage;
+        }
       }
 
-      const data = await response.json();
-      const botReply = data.reply || 'Ficou alguma dúvida técnica? Fale diretamente com o Thales no WhatsApp para fechar seu serviço!';
+      if (!botReply) {
+        botReply = 'Como consultor técnico da Thales Pinturas, prezo pela excelência: nosso acabamento é cirúrgico e com obra limpa. Para orçamentos e prazos precisos, fale agora diretamente com o Thales no WhatsApp para contratar com quem é Top 3 do Brasil!';
+      }
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: botReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        whatsappMessage: suggestedWhatsApp,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+
+      if (autoSpeak) {
+        speakMessage(botReply);
+      }
     } catch (err) {
       console.error('Falha ao comunicar com o assistente:', err);
+      const fallbackReply = 'Como consultor técnico da Thales Pinturas, prezo pela excelência: nosso acabamento é cirúrgico e com obra limpa. Para orçamentos e prazos precisos, fale agora diretamente com o Thales no WhatsApp para contratar com quem é Top 3 do Brasil!';
       const fallbackMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content:
-          'Tivemos uma oscilação momentânea, mas você pode tirar sua dúvida diretamente com o Thales agora no WhatsApp com atendimento prioritário!',
+        content: fallbackReply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        whatsappMessage: 'Olá, Thales! Gostaria de um orçamento com a Thales Pinturas',
       };
       setMessages((prev) => [...prev, fallbackMessage]);
+      if (autoSpeak) {
+        speakMessage(fallbackReply);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -445,16 +465,38 @@ export const LateralAIAssistant: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                stopSpeech();
-              }}
-              className="p-1.5 text-[#DCD3C5] hover:text-[#FAF8F5] hover:bg-[#2A443B] transition-colors cursor-pointer"
-              aria-label="Fechar Cobalto"
-            >
-              <X size={19} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Auto voice reading toggle */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (isSpeaking) {
+                    stopSpeech();
+                  }
+                  setAutoSpeak(!autoSpeak);
+                }}
+                className={`px-2 py-1 text-[9px] font-bold uppercase tracking-wider border flex items-center gap-1 transition-colors cursor-pointer ${
+                  autoSpeak
+                    ? 'bg-[#BD6B3B] text-white border-[#BD6B3B]'
+                    : 'bg-[#2A443B] text-[#DCD3C5] border-[#3E5C50] hover:text-[#FAF8F5]'
+                }`}
+                title={autoSpeak ? 'Leitura por voz ativada (toque para desativar)' : 'Ativar leitura por voz das respostas'}
+              >
+                {autoSpeak ? <Volume2 size={12} /> : <VolumeX size={12} />}
+                <span>{autoSpeak ? 'Voz Ativa' : 'Áudio'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  stopSpeech();
+                }}
+                className="p-1.5 text-[#DCD3C5] hover:text-[#FAF8F5] hover:bg-[#2A443B] transition-colors cursor-pointer"
+                aria-label="Fechar Cobalto"
+              >
+                <X size={19} />
+              </button>
+            </div>
           </div>
 
           {/* Mode Switcher Tabs: Chat vs Simulador Visual */}
@@ -507,13 +549,28 @@ export const LateralAIAssistant: React.FC = () => {
                     )}
 
                     <div
-                      className={`p-3 max-w-[85%] leading-relaxed ${
+                      className={`p-3 max-w-[88%] leading-relaxed ${
                         msg.role === 'user'
                           ? 'bg-[#1D2F29] text-[#FAF8F5]'
                           : 'bg-[#FFFFFF] text-[#2E3531] border border-[#E2DDD5] shadow-xs'
                       }`}
                     >
                       <div className="whitespace-pre-wrap">{msg.content}</div>
+
+                      {/* Direct WhatsApp Call-To-Action Button for Assistant Messages */}
+                      {msg.role === 'assistant' && (
+                        <div className="mt-2.5 pt-2 border-t border-[#EAE4DB]/80 flex flex-wrap items-center gap-2">
+                          <a
+                            href={getWhatsAppLink(msg.whatsappMessage || 'Olá, Thales! Gostaria de um orçamento')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-[11px] font-bold uppercase tracking-wider shadow-xs transition-all cursor-pointer"
+                          >
+                            <WhatsAppIcon size={13} />
+                            <span>Contratar no WhatsApp →</span>
+                          </a>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between mt-2 pt-1 border-t border-[#EAE4DB]/60 text-[9px]">
                         <span className={msg.role === 'user' ? 'text-[#DCD3C5]' : 'text-[#8D7F71]'}>
@@ -555,6 +612,27 @@ export const LateralAIAssistant: React.FC = () => {
                 )}
 
                 <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick Prompt Chips */}
+              <div className="px-3 pt-2 pb-1 bg-[#FAF8F5] border-t border-[#EAE4DB] overflow-x-auto flex items-center gap-1.5 no-scrollbar">
+                {[
+                  { label: '📋 Orçamento', text: 'Gostaria de um orçamento com o Thales para o meu imóvel' },
+                  { label: '🏠 Pintura Residencial & Predial', text: 'Quais técnicas o Thales utiliza na pintura residencial e predial?' },
+                  { label: '🌊 Revitalização & Maresia', text: 'Como vocês tratam trincas e protegem contra a maresia?' },
+                  { label: '✨ Limpeza pós Obra', text: 'Como funciona a limpeza pós-obra especializada?' },
+                  { label: '🪨 Pedras Naturais', text: 'Como é feita a aplicação de pedras naturais nas fachadas?' },
+                ].map((chip) => (
+                  <button
+                    key={chip.label}
+                    type="button"
+                    onClick={() => handleSendMessage(chip.text)}
+                    disabled={isLoading}
+                    className="shrink-0 px-2.5 py-1 bg-white hover:bg-[#F4EFEA] border border-[#DCD3C5] hover:border-[#1D2F29] text-[10px] font-semibold text-[#14201C] transition-colors cursor-pointer"
+                  >
+                    {chip.label}
+                  </button>
+                ))}
               </div>
 
               {/* Chat Input Bar with Audio Mic and Text */}
