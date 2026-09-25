@@ -271,6 +271,71 @@ export const LateralAIAssistant: React.FC = () => {
     }
   };
 
+  function getSmartTechnicalReply(query: string): { reply: string; suggestedWhatsApp: string } {
+    const q = (query || '').toLowerCase();
+
+    if (q.includes('quem') && (q.includes('site') || q.includes('desenvolveu') || q.includes('criou') || q.includes('dev'))) {
+      return {
+        reply: 'O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br).\n\nPara consultoria técnica em pintura e limpeza pós-obra com o Thales, chame diretamente no WhatsApp!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para o meu imóvel',
+      };
+    }
+
+    if (q.includes('oi') || q.includes('ola') || q.includes('olá') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem')) {
+      return {
+        reply: 'Olá! Sou o Cobalto, consultor técnico da Thales Pinturas. O Thales é reconhecido entre os Top 3 Melhores Pintores do Brasil (ABRAPP/MBPM). Realizamos pintura residencial e predial, revitalização de fachadas, pedras naturais e limpeza pós-obra.\n\nComo posso te orientar tecnicamente sobre o seu projeto hoje?',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de conhecer os serviços da Thales Pinturas',
+      };
+    }
+
+    if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('valor') || q.includes('custo') || q.includes('orcamento') || q.includes('orçamento') || q.includes('m2') || q.includes('metro')) {
+      return {
+        reply: 'Como consultor técnico da Thales Pinturas, prezo pelo rigor: cada imóvel possui particularidades de substrato, altura, lixamento e tipo de tinta. Por isso, não passamos estimativas genéricas; nosso orçamento é 100% transparente, sem compromisso e personalizado.\n\nO próximo passo é conversar diretamente com o Thales no WhatsApp para agendar sua avaliação técnica!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento personalizado para o meu imóvel',
+      };
+    }
+
+    if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('quando')) {
+      return {
+        reply: 'O prazo exato depende da metragem, das etapas de cura e do nível de preparação da alvenaria para garantir acabamento sem marcas e sem retrabalho. O cronograma é alinhado com pontualidade diretamente no orçamento com o profissional.\n\nFale agora com o Thales no WhatsApp para combinarmos o prazo ideal para a sua obra!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de alinhar prazos e orçamento para o meu imóvel',
+      };
+    }
+
+    if (q.includes('limp') || q.includes('pos obra') || q.includes('pós obra') || q.includes('poeira') || q.includes('vidro') || q.includes('porcelanato')) {
+      return {
+        reply: 'Nossa limpeza pós-obra é minuciosa e técnica: removemos a poeira ultrafina do lixamento, desincrustamos porcelanatos e higienizamos esquadrias e vidros sem causar nenhum arranhão. Entregamos o imóvel 100% pronto para morar ou alugar!\n\nVamos fechar esse serviço junto à sua pintura? Clique abaixo e fale com o Thales no WhatsApp.',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Limpeza pós Obra especializada',
+      };
+    }
+
+    if (q.includes('pedra') || q.includes('moledo') || q.includes('ferro') || q.includes('muro') || q.includes('fachada de pedra')) {
+      return {
+        reply: 'A aplicação de pedras naturais (como Moledo, pedra ferro e miracema) traz imponência arquitetônica à fachada. O Thales executa o assentamento rigoroso e aplica resina hidrofugante premium que repele a umidade e não embolora com o tempo.\n\nPara transformar a fachada do seu imóvel, converse com o Thales no WhatsApp e feche seu projeto!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Aplicação de pedras naturais',
+      };
+    }
+
+    if (q.includes('revita') || q.includes('trinca') || q.includes('fissura') || q.includes('maresia') || q.includes('emborrachada')) {
+      return {
+        reply: 'Em Itajaí e cidades litorâneas, revitalização exige tratamento profundo: abrimos e selamos trincas com mastique elástico e aplicamos tinta elastomérica/emborrachada que cria uma membrana impermeável contra a maresia e sol intenso.\n\nProteja o patrimônio do seu imóvel com quem é Top 3 do Brasil. Chame o Thales no WhatsApp para contratar!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Revitalização de fachada e tratamento de trincas',
+      };
+    }
+
+    if (q.includes('balneario') || q.includes('balneário') || q.includes('itajai') || q.includes('itajaí') || q.includes('brava') || q.includes('navegantes') || q.includes('camboriu')) {
+      return {
+        reply: 'Atendemos com frequência e pontualidade Itajaí, Praia Brava, Balneário Camboriú e região! Somos especialistas nas exigências litorâneas, aplicando materiais resistentes à maresia e entregando o acabamento arquitetônico que esses imóveis exigem.\n\nVamos agendar uma visita técnica no seu imóvel? Clique no botão e fale com o Thales no WhatsApp!',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de agendar uma visita técnica para o meu imóvel na região',
+      };
+    }
+
+    return {
+      reply: 'Como consultor técnico da Thales Pinturas (eleito Top 3 do Brasil ABRAPP/MBPM), nosso compromisso é recorte cirúrgico, zero respingos e obra limpa. Atendemos pintura residencial e predial, revitalização anti-maresia, pedras naturais e limpeza pós-obra.\n\nPara garantir a sua data e contratar com quem entende do assunto, chame o Thales agora no WhatsApp!',
+      suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
+    };
+  }
+
   const handleSendMessage = async (textToSend?: string) => {
     const messageContent = (textToSend || input).trim();
     if (!messageContent || isLoading) return;
@@ -290,9 +355,13 @@ export const LateralAIAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
+      const abortController = new AbortController();
+      const fetchTimeout = setTimeout(() => abortController.abort(), 9000);
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: abortController.signal,
         body: JSON.stringify({
           messages: newHistory.map((m) => ({
             role: m.role,
@@ -300,6 +369,7 @@ export const LateralAIAssistant: React.FC = () => {
           })),
         }),
       });
+      clearTimeout(fetchTimeout);
 
       let botReply = '';
       let suggestedWhatsApp = 'Olá, Thales! Gostaria de um orçamento para o meu imóvel';
@@ -313,7 +383,9 @@ export const LateralAIAssistant: React.FC = () => {
       }
 
       if (!botReply) {
-        botReply = 'Como consultor técnico da Thales Pinturas, prezo pela excelência: nosso acabamento é cirúrgico e com obra limpa. Para orçamentos e prazos precisos, fale agora diretamente com o Thales no WhatsApp para contratar com quem é Top 3 do Brasil!';
+        const smart = getSmartTechnicalReply(messageContent);
+        botReply = smart.reply;
+        suggestedWhatsApp = smart.suggestedWhatsApp;
       }
 
       const assistantMessage: ChatMessage = {
@@ -334,14 +406,14 @@ export const LateralAIAssistant: React.FC = () => {
         speakMessage(botReply);
       }
     } catch (err) {
-      console.error('Falha ao comunicar com o assistente:', err);
-      const fallbackReply = 'Como consultor técnico da Thales Pinturas, prezo pela excelência: nosso acabamento é cirúrgico e com obra limpa. Para orçamentos e prazos precisos, fale agora diretamente com o Thales no WhatsApp para contratar com quem é Top 3 do Brasil!';
+      console.warn('Fallback inteligente ativado para o Cobalto:', err);
+      const smart = getSmartTechnicalReply(messageContent);
       const fallbackMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: fallbackReply,
+        content: smart.reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        whatsappMessage: 'Olá, Thales! Gostaria de um orçamento com a Thales Pinturas',
+        whatsappMessage: smart.suggestedWhatsApp,
       };
       setMessages((prev) => {
         const updated = [...prev, fallbackMessage];
@@ -349,7 +421,7 @@ export const LateralAIAssistant: React.FC = () => {
         return updated;
       });
       if (autoSpeak) {
-        speakMessage(fallbackReply);
+        speakMessage(smart.reply);
       }
     } finally {
       setIsLoading(false);
