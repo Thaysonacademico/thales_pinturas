@@ -94,6 +94,18 @@ const FINISH_OPTIONS = [
   },
 ];
 
+// Clean markdown asterisks and formatting artifacts for clean, readable text
+const cleanAsterisks = (text: string): string => {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/\*\*/g, '')
+    .replace(/(^|\n)\s*\*\s+/g, '$1- ')
+    .replace(/\*/g, '')
+    .trim();
+};
+
 export const triggerCobaltoWithQuestion = (queryText?: string) => {
   window.dispatchEvent(new CustomEvent('open-cobalto', { detail: { query: queryText || '' } }));
 };
@@ -121,7 +133,7 @@ export const LateralAIAssistant: React.FC = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Olá! Sou o Cobalto, consultor técnico especialista da Thales Pinturas. O Thales foi eleito Top 3 do Brasil pela ABRAPP/MBPM. Como posso te orientar tecnicamente sobre seu imóvel hoje?',
+        'Ô cumpadi, ô cumadi! Bão demais da conta? Aqui quem fala é o Cobalto, mestre pintor da Thales Pinturas! O Thales foi eleito entre os 3 Melhores Pintores do Brasil (ABRAPP/MBPM), cabôco bão de serviço! Do que ocê tá precisando pro seu rancho hoje?',
       timestamp: 'Agora',
       whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
     },
@@ -230,9 +242,16 @@ export const LateralAIAssistant: React.FC = () => {
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleanSpeech = cleanAsterisks(text)
+      .replace(/[*_#`~]/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\n+/g, '. ')
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanSpeech);
     utterance.lang = 'pt-BR';
-    utterance.rate = 1.05;
+    utterance.rate = 0.95;
+    utterance.pitch = 0.96;
 
     // Pick a Portuguese voice if available
     const voices = window.speechSynthesis.getVoices();
@@ -276,70 +295,77 @@ export const LateralAIAssistant: React.FC = () => {
 
     if (q.includes('quem') && (q.includes('site') || q.includes('desenvolveu') || q.includes('criou') || q.includes('dev'))) {
       return {
-        reply: 'O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br).\n\nPara consultoria técnica em pintura e limpeza pós-obra com o Thales, chame diretamente no WhatsApp!',
+        reply: 'Esse site bunito foi desenvolvido pelo Dev. Thayson (dviadev.com.br), cabôco bão demais nos computadô!\n\nAgora, se ocê tá querendo pintura de primeira ou limpeza pós-obra nos trinques com o Thales, chama ele no zap pra nóis combiná!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para o meu imóvel',
       };
     }
 
     if (q.includes('oi') || q.includes('ola') || q.includes('olá') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem')) {
       return {
-        reply: 'Olá! Sou o Cobalto, consultor técnico da Thales Pinturas. O Thales é reconhecido entre os Top 3 Melhores Pintores do Brasil (ABRAPP/MBPM). Realizamos pintura residencial e predial, revitalização de fachadas, pedras naturais e limpeza pós-obra.\n\nComo posso te orientar tecnicamente sobre o seu projeto hoje?',
+        reply: 'Ô cumpadi, ô cumadi! Bão demais da conta? Sou o Cobalto, mestre pintor e consultor técnico da Thales Pinturas. O Thales foi eleito Top 3 do Brasil no Prêmio Pintor Destaque Nacional! Cuidamos de pintura residencial e predial, revitalização, pedras naturais e limpeza pós-obra no maior capricho.\n\nComo posso te ajudá no seu rancho hoje?',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de conhecer os serviços da Thales Pinturas',
       };
     }
 
     if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('valor') || q.includes('custo') || q.includes('orcamento') || q.includes('orçamento') || q.includes('m2') || q.includes('metro')) {
       return {
-        reply: 'Como consultor técnico da Thales Pinturas, prezo pelo rigor: cada imóvel possui particularidades de substrato, altura, lixamento e tipo de tinta. Por isso, não passamos estimativas genéricas; nosso orçamento é 100% transparente, sem compromisso e personalizado.\n\nO próximo passo é conversar diretamente com o Thales no WhatsApp para agendar sua avaliação técnica!',
+        reply: 'Uai, falar de preço de boca sem ver a parede é cilada, sô! Aqui na Thales Pinturas o capricho é sério: cada parede tem sua manha, o lixamento certo e o tipo de tinta ideal. Por isso nosso orçamento é 100% transparente, sem compromisso e sem enrolação.\n\nClica no botãozinho e chama o Thales no zap pra proseá e agendá sua visita técnica!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento personalizado para o meu imóvel',
       };
     }
 
     if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('quando')) {
       return {
-        reply: 'O prazo exato depende da metragem, das etapas de cura e do nível de preparação da alvenaria para garantir acabamento sem marcas e sem retrabalho. O cronograma é alinhado com pontualidade diretamente no orçamento com o profissional.\n\nFale agora com o Thales no WhatsApp para combinarmos o prazo ideal para a sua obra!',
+        reply: 'Olha só, o tempo de entrega depende do tamanho do serviço e do capricho na cura e secagem das tintas, pra num dá defeito nem marca de rolo! O Thales alinha o cronograma certinho e entrega no dia combinado sem atraso.\n\nManda um zap pro Thales agora e bora combiná o prazo certinho pra sua obra!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de alinhar prazos e orçamento para o meu imóvel',
       };
     }
 
     if (q.includes('limp') || q.includes('pos obra') || q.includes('pós obra') || q.includes('poeira') || q.includes('vidro') || q.includes('porcelanato')) {
       return {
-        reply: 'Nossa limpeza pós-obra é minuciosa e técnica: removemos a poeira ultrafina do lixamento, desincrustamos porcelanatos e higienizamos esquadrias e vidros sem causar nenhum arranhão. Entregamos o imóvel 100% pronto para morar ou alugar!\n\nVamos fechar esse serviço junto à sua pintura? Clique abaixo e fale com o Thales no WhatsApp.',
+        reply: 'Eita, poeira de lixamento e reforma é um sofrimento danado! Mas a nossa Limpeza Pós-Obra tira até o último pó de gesso, desencarde porcelanato e deixa esquadrias e vidros tinindo de limpo, sem um arranhão sequer. O imóvel fica 100% pronto pra morá!\n\nBora fechá esse serviço junto com a pintura? Chama o Thales no zap e garante essa tranquilidade!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Limpeza pós Obra especializada',
       };
     }
 
     if (q.includes('pedra') || q.includes('moledo') || q.includes('ferro') || q.includes('muro') || q.includes('fachada de pedra')) {
       return {
-        reply: 'A aplicação de pedras naturais (como Moledo, pedra ferro e miracema) traz imponência arquitetônica à fachada. O Thales executa o assentamento rigoroso e aplica resina hidrofugante premium que repele a umidade e não embolora com o tempo.\n\nPara transformar a fachada do seu imóvel, converse com o Thales no WhatsApp e feche seu projeto!',
+        reply: 'Pense numa fachada que impõe respeito! O Thales assenta pedra Moledo, ferro e miracema com precisão cirúrgica e ainda passa resina hidrofugante de primeira linha pra repelir a água da chuva e não embolorá nunca.\n\nQuer deixar sua casa com cara de casarão chique? Chama o Thales no zap e vamo fechá esse projeto!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Aplicação de pedras naturais',
       };
     }
 
     if (q.includes('revita') || q.includes('trinca') || q.includes('fissura') || q.includes('maresia') || q.includes('emborrachada')) {
       return {
-        reply: 'Em Itajaí e cidades litorâneas, revitalização exige tratamento profundo: abrimos e selamos trincas com mastique elástico e aplicamos tinta elastomérica/emborrachada que cria uma membrana impermeável contra a maresia e sol intenso.\n\nProteja o patrimônio do seu imóvel com quem é Top 3 do Brasil. Chame o Thales no WhatsApp para contratar!',
+        reply: 'Aqui no litoral, o vento com maresia e sol castiga as paredes, uai! Na revitalização, o Thales abre as trincas, sela com mastique e mete aquela tinta emborrachada elástica que vira uma capa de chuva protetora na parede.\n\nProteja seu patrimônio com quem é Top 3 do Brasil! Manda um zap pro Thales agora pra contratá!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para Revitalização de fachada e tratamento de trincas',
       };
     }
 
     if (q.includes('balneario') || q.includes('balneário') || q.includes('itajai') || q.includes('itajaí') || q.includes('brava') || q.includes('navegantes') || q.includes('camboriu')) {
       return {
-        reply: 'Atendemos com frequência e pontualidade Itajaí, Praia Brava, Balneário Camboriú e região! Somos especialistas nas exigências litorâneas, aplicando materiais resistentes à maresia e entregando o acabamento arquitetônico que esses imóveis exigem.\n\nVamos agendar uma visita técnica no seu imóvel? Clique no botão e fale com o Thales no WhatsApp!',
+        reply: 'Nós atende Itajaí, Praia Brava, Balneário Camboriú e toda a região vizinha com a maior pontualidade! Conhecemos cada canto e sabemos bem como o salitre da praia castiga as paredes.\n\nBora agendá uma visita no seu imóvel? Clica no botão e chama o Thales no zap!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de agendar uma visita técnica para o meu imóvel na região',
+      };
+    }
+
+    if (q.includes('cor') || q.includes('cores') || q.includes('paleta') || q.includes('tom') || q.includes('tons') || q.includes('recomende') || q.includes('sala') || q.includes('quarto') || q.includes('parede') || q.includes('tinta')) {
+      return {
+        reply: 'Ô cumpadi, pensa num trem que valoriza a casa! Vou te indicá três cores que tão fazendo o maior sucesso: 1) Crômio (Cinza Suave), chique e moderno pras paredes principais; 2) Algodão Egípcio (Off-White), clarinho, acolhedor e que clareia o ambiente todinho; e 3) Verde Sálvia, perfeito pra uma parede de destaque no quarto ou na sala, trazendo aquela paz da roça. E com acabamento acetinado lavável, fica um brinco!\n\nBora proseá com o Thales no zap pra combiná a avaliação técnica do seu rancho?',
+        suggestedWhatsApp: 'Olá, Thales! Gostaria de consultoria de acabamento e cores para o meu imóvel',
       };
     }
 
     if (q.includes('apartamento') || q.includes('apto') || q.includes('casa') || q.includes('sobrado') || q.includes('predio') || q.includes('prédio') || q.includes('condominio')) {
       return {
-        reply: 'Realizamos pintura residencial e predial com padrão de acabamento cirúrgico: preparação completa, lixamento técnico, recortes sem respingos e aplicação de tintas nobres laváveis (foscas, acetinadas ou semibrilho).\n\nPara garantir a sua data e contratar com quem é Top 3 do Brasil, converse com o Thales diretamente no WhatsApp!',
+        reply: 'Aqui a pintura residencial e predial é feita com padrão cirúrgico, sô! Nós faz lixamento técnico, protege piso, rodapé e esquadria pra num respingá nada, e aplica tinta de primeira linha. Fica um brinco, sem marca de rolo!\n\nPra garantí sua vaga com quem é Top 3 do Brasil, clica no botão e proseia direto com o Thales no zap!',
         suggestedWhatsApp: 'Olá, Thales! Gostaria de um orçamento para pintura do meu imóvel',
       };
     }
 
     return {
-      reply: `Entendido sobre "${query}". Na Thales Pinturas analisamos cada detalhe com rigor técnico para indicar a melhor solução de acabamento e durabilidade para o seu ambiente.\n\nPara receber uma avaliação técnica e agendar sua visita, clique no botão e fale agora diretamente com o Thales no WhatsApp!`,
-      suggestedWhatsApp: `Olá, Thales! Gostaria de falar sobre: ${query}`,
+      reply: 'Aqui na Thales Pinturas, a prosa é firme e o serviço é no capricho: avaliamos cada detalhe da alvenaria pra indicar a tinta e o acabamento que vai deixá seu imóvel um brinco de bunito e protegido.\n\nPra nóis combiná uma visita técnica sem compromisso, clica no botão e proseia direto com o Thales no WhatsApp!',
+      suggestedWhatsApp: query ? `Olá, Thales! Gostaria de falar sobre: ${query}` : 'Olá, Thales! Gostaria de um orçamento para os serviços da Thales Pinturas',
     };
   }
 
@@ -363,7 +389,7 @@ export const LateralAIAssistant: React.FC = () => {
 
     try {
       const abortController = new AbortController();
-      const fetchTimeout = setTimeout(() => abortController.abort(), 15000);
+      const fetchTimeout = setTimeout(() => abortController.abort(), 35000);
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -383,7 +409,7 @@ export const LateralAIAssistant: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        botReply = data.reply || '';
+        botReply = cleanAsterisks(data.reply || '');
         if (data.suggestedWhatsAppMessage) {
           suggestedWhatsApp = data.suggestedWhatsAppMessage;
         }
@@ -391,7 +417,7 @@ export const LateralAIAssistant: React.FC = () => {
 
       if (!botReply) {
         const smart = getSmartTechnicalReply(messageContent);
-        botReply = smart.reply;
+        botReply = cleanAsterisks(smart.reply);
         suggestedWhatsApp = smart.suggestedWhatsApp;
       }
 
@@ -418,7 +444,7 @@ export const LateralAIAssistant: React.FC = () => {
       const fallbackMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: smart.reply,
+        content: cleanAsterisks(smart.reply),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         whatsappMessage: smart.suggestedWhatsApp,
       };
@@ -549,11 +575,11 @@ export const LateralAIAssistant: React.FC = () => {
                     Cobalto
                   </h3>
                   <span className="text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 bg-[#BD6B3B] text-white">
-                    Especialista Oficial
+                    Mestre Pintor
                   </span>
                 </div>
                 <p className="text-[10px] text-[#DCD3C5] font-medium">
-                  Tire dúvidas técnicas ou simule cores e pedras
+                  Proseie sobre tintas, pedras e pós-obra
                 </p>
               </div>
             </div>
@@ -648,7 +674,7 @@ export const LateralAIAssistant: React.FC = () => {
                           : 'bg-[#FFFFFF] text-[#2E3531] border border-[#E2DDD5] shadow-xs'
                       }`}
                     >
-                      <div className="whitespace-pre-wrap">{msg.content}</div>
+                      <div className="whitespace-pre-wrap">{cleanAsterisks(msg.content)}</div>
 
                       {/* Direct WhatsApp Call-To-Action Button for Assistant Messages */}
                       {msg.role === 'assistant' && (

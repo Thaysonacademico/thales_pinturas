@@ -20,15 +20,15 @@ const AwardSection: React.FC = () => {
         <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#BD6B3B]/20 border border-[#BD6B3B]/40 text-[#BD6B3B] text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
             <Trophy size={13} className="text-[#BD6B3B]" />
-            <span>Chancela Oficial • Julho 2026</span>
+            <span>Padrão Profissional • Litoral Catarinense</span>
           </div>
 
           <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[#FAF8F5] leading-tight">
-            Top 3 Melhores Pintores do Brasil
+            Excelência em Pintura & Limpeza Pós-Obra
           </h2>
 
           <p className="mt-2.5 text-xs sm:text-sm text-[#DCD3C5] max-w-lg mx-auto leading-relaxed">
-            Reconhecimento técnico nacional no <strong>Prêmio Pintor Destaque</strong>, conduzido pela <strong>ABRAPP</strong> e pelo <strong>MBPM</strong>.
+            Entre os profissionais mais recomendados de <strong>Itajaí, Praia Brava e Balneário Camboriú</strong> para clientes que buscam acabamento cirúrgico.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ const AwardSection: React.FC = () => {
             {/* Visual Recognition Spotlight */}
             <div className="md:col-span-5 flex flex-col items-center text-center p-6 bg-[#16221E] border border-[#2A3F37] relative">
               <div className="absolute -top-3 bg-[#BD6B3B] text-[#FAF8F5] text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 shadow">
-                Votação Nacional
+                Alto Padrão
               </div>
 
               <ThalesLogo className="w-20 h-20 sm:w-24 sm:h-24 my-2 drop-shadow-xl" />
@@ -51,11 +51,11 @@ const AwardSection: React.FC = () => {
               </p>
 
               <div className="mt-4 pt-3 border-t border-[#263C34] w-full flex items-center justify-around text-[10px] text-[#DCD3C5]">
-                <span>ABRAPP</span>
+                <span>Itajaí</span>
                 <span className="text-[#BD6B3B]">•</span>
-                <span>MBPM</span>
+                <span>Praia Brava</span>
                 <span className="text-[#BD6B3B]">•</span>
-                <span>Julho 2026</span>
+                <span>Balneário Camboriú</span>
               </div>
             </div>
 

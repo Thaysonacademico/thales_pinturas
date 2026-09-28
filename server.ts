@@ -8,129 +8,59 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  SYSTEM_INSTRUCTION,
+  cleanAsterisks,
+  generateCobaltoTechnicalFallback,
+} from './api/_lib/cobalto.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SYSTEM_INSTRUCTION = `Você é o "Cobalto", o consultor técnico virtual especialista da "Thales Pinturas". O Thales foi eleito entre os 3 Melhores Pintores do Brasil no Prêmio Pintor Destaque Nacional em Julho de 2026, chancelado pela ABRAPP (Associação Brasileira dos Pintores Profissionais) e pelo MBPM (Movimento Brasil Por Um Pintor Melhor).
-
-SEU PAPEL:
-- Você é um mestre pintor experiente, rigoroso e acolhedor.
-- Suas respostas devem ser 100% especializadas, técnicas e com a sabedoria prática de quem entende de alvenaria, tintas, maresia e acabamento fino.
-
-OS 5 SERVIÇOS EXCLUSIVOS DO THALES:
-1. "Pintura residencial e predial": Casas, apartamentos e condomínios com recorte cirúrgico, sem marcas de rolo, proteção de pisos e esquadrias.
-2. "Revitalização": Restauração de fachadas, tratamento de fissuras, juntas de dilatação e impermeabilização com tintas elastoméricas e emborrachadas contra a maresia.
-3. "Limpeza pós Obra": Higienização profunda após reforma, remoção minuciosa de poeira de lixamento, desincrustação de porcelanatos e vidros sem riscos, e hidrojateamento de fachadas. Imóvel entregue 100% pronto para morar!
-4. "Aplicação de pedras naturais": Fachadas e muros imponentes em pedra Moledo, pedra ferro, São Tomé e miracema com hidrofugante premium que não embolora.
-5. "Serviço Personalizado": Demandas sob medida, consultoria de cores, blocos de kitnets de aluguel para retorno rápido e acabamentos especiais.
-
-REGRAS DE OURO (INVIOLÁVEIS):
-1. SEJA MUITO CONCISO: Dê respostas curtas, diretas e objetivas (máximo 1 a 2 parágrafos pequenos ou tópicos rápidos). Nada de textos longos!
-2. SEMPRE INCENTIVE A CONTRATAR OS SERVIÇOS: Ao final de toda resposta, instrua a pessoa a fechar a contratação e dar o próximo passo conversando com o Thales no WhatsApp.
-3. NUNCA FAÇA ORÇAMENTOS OU ESTIMATIVAS DE PREÇO: Jamais cite valores em reais (R$) ou faixas de preço. Explique que o orçamento é transparente e personalizado diretamente pelo Thales no WhatsApp.
-4. NUNCA ESTIME PRAZOS: Prazos dependem da avaliação técnica de cada imóvel e são combinados exclusivamente no orçamento com o Thales.
-5. AUTORIA DO SITE: Se perguntarem quem criou o site, responda: "O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br)."`;
-
-function generateCobaltoTechnicalFallback(userQuery: string): { reply: string; whatsappMessage: string } {
-  const q = (userQuery || '').toLowerCase().trim();
-
-  if (q.includes('quem') && (q.includes('fez') || q.includes('criou') || q.includes('desenvolveu') || q.includes('site') || q.includes('programador') || q.includes('dev'))) {
-    return {
-      reply: 'O site foi desenvolvido pelo Dev. Thayson (dviadev.com.br).\n\nSe você busca excelência técnica em pintura ou limpeza pós-obra com o Thales, fale conosco diretamente no WhatsApp para contratar!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para o meu imóvel',
-    };
+function getPort(): number {
+  const portArgIndex = process.argv.indexOf('--port');
+  if (portArgIndex !== -1 && process.argv[portArgIndex + 1]) {
+    const p = Number(process.argv[portArgIndex + 1]);
+    if (!isNaN(p) && p > 0) return p;
   }
-
-  if (q.includes('quanto') || q.includes('preco') || q.includes('preço') || q.includes('custo') || q.includes('valor') || q.includes('orcamento') || q.includes('orçamento') || q.includes('tabela') || q.includes('m2') || q.includes('metro')) {
-    return {
-      reply: 'Como consultor técnico da Thales Pinturas, prezo pelo rigor: cada imóvel possui particularidades de substrato, altura, lixamento e tipo de tinta. Por isso, não passamos estimativas genéricas; nosso orçamento é 100% transparente, sem compromisso e personalizado.\n\nO próximo passo é conversar diretamente com o Thales no WhatsApp para agendar sua avaliação técnica!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento personalizado para o meu imóvel',
-    };
+  if (process.env.PORT) {
+    const p = Number(process.env.PORT);
+    if (!isNaN(p) && p > 0) return p;
   }
+  return 3000;
+}
 
-  if (q.includes('prazo') || q.includes('tempo') || q.includes('demora') || q.includes('dias') || q.includes('semanas') || q.includes('quando entrega') || q.includes('quando comeca') || q.includes('quando começa')) {
-    return {
-      reply: 'O prazo exato depende da metragem, das etapas de cura e do nível de preparação da alvenaria para garantir acabamento sem marcas e sem retrabalho. O cronograma é alinhado com pontualidade diretamente no orçamento com o profissional.\n\nFale agora com o Thales no WhatsApp para combinarmos o prazo ideal para a sua obra!',
-      whatsappMessage: 'Olá, Thales! Gostaria de alinhar prazos e orçamento para o meu imóvel',
-    };
+function getHost(): string {
+  const hostArgIndex = process.argv.indexOf('--host');
+  if (hostArgIndex !== -1 && process.argv[hostArgIndex + 1]) {
+    return process.argv[hostArgIndex + 1];
   }
-
-  if (q.includes('balneario') || q.includes('balneário') || q.includes('itajai') || q.includes('itajaí') || q.includes('brava') || q.includes('navegantes') || q.includes('camboriu') || q.includes('camboriú') || q.includes('litoral') || q.includes('onde atende')) {
-    return {
-      reply: 'Atendemos com frequência e pontualidade Itajaí, Praia Brava, Balneário Camboriú e região! Somos especialistas nas exigências litorâneas, aplicando materiais resistentes à maresia e entregando o acabamento arquitetônico que esses imóveis exigem.\n\nVamos agendar uma visita técnica no seu imóvel? Clique no botão e fale com o Thales no WhatsApp!',
-      whatsappMessage: 'Olá, Thales! Gostaria de agendar uma visita técnica para o meu imóvel na região',
-    };
-  }
-
-  if (q.includes('apartamento') || q.includes('apto') || q.includes('casa') || q.includes('sobrado') || q.includes('predio') || q.includes('prédio') || q.includes('condominio') || q.includes('condomínio') || q.includes('residencial') || q.includes('comercial')) {
-    return {
-      reply: 'Realizamos pintura residencial e predial com padrão de acabamento cirúrgico: lixamento técnico, proteção completa de pisos e esquadrias, recortes sem respingos e aplicação de tintas laváveis de alto padrão (foscas, acetinadas ou semibrilho).\n\nPara garantir a sua data e contratar com quem é Top 3 do Brasil, converse com o Thales diretamente no WhatsApp!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para pintura do meu imóvel',
-    };
-  }
-
-  if (q.includes('cor') || q.includes('cores') || q.includes('paleta') || q.includes('acetinado') || q.includes('fosco') || q.includes('lavavel') || q.includes('lavável') || q.includes('tinta') || q.includes('suvinil') || q.includes('coral')) {
-    return {
-      reply: 'Orientamos a melhor combinação estética e técnica para o seu ambiente: tons claros e acetinados para salas e quartos sofisticados, ou tintas laváveis super-resistentes para áreas de circulação. Também indicamos produtos específicos anti-mofo e de alta durabilidade.\n\nQuer ajuda para escolher o acabamento perfeito? Fale com o Thales no WhatsApp para fechar seu projeto!',
-      whatsappMessage: 'Olá, Thales! Gostaria de consultoria de acabamento e orçamento para o meu imóvel',
-    };
-  }
-
-  if (q.includes('limp') || q.includes('pos obra') || q.includes('pós obra') || q.includes('poeira') || q.includes('vidro') || q.includes('porcelanato') || q.includes('pos-obra')) {
-    return {
-      reply: 'Nossa limpeza pós-obra é minuciosa e técnica: removemos a poeira ultrafina do lixamento, desincrustamos porcelanatos e higienizamos esquadrias e vidros sem causar nenhum arranhão. Entregamos o imóvel 100% pronto para morar ou alugar!\n\nVamos fechar esse serviço junto à sua pintura? Clique abaixo e fale com o Thales no WhatsApp.',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Limpeza pós Obra especializada',
-    };
-  }
-
-  if (q.includes('pedra') || q.includes('moledo') || q.includes('ferro') || q.includes('muro') || q.includes('fachada de pedra') || q.includes('revestimento')) {
-    return {
-      reply: 'A aplicação de pedras naturais (como Moledo, pedra ferro e miracema) traz imponência arquitetônica à fachada. O Thales executa o assentamento rigoroso e aplica resina hidrofugante premium que repele a umidade e não embolora com o tempo.\n\nPara transformar a fachada do seu imóvel, converse com o Thales no WhatsApp e feche seu projeto!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Aplicação de pedras naturais',
-    };
-  }
-
-  if (q.includes('revita') || q.includes('trinca') || q.includes('fissura') || q.includes('infiltr') || q.includes('maresia') || q.includes('emborrachada') || q.includes('umidade')) {
-    return {
-      reply: 'Em Itajaí e cidades litorâneas, revitalização exige tratamento profundo: abrimos e selamos trincas com mastique elástico e aplicamos tinta elastomérica/emborrachada que cria uma membrana impermeável contra a maresia e sol intenso.\n\nProteja o patrimônio do seu imóvel com quem é Top 3 do Brasil. Chame o Thales no WhatsApp para contratar!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para Revitalização de fachada e tratamento de trincas',
-    };
-  }
-
-  if (q.includes('simul') || q.includes('imagem') || q.includes('foto') || q.includes('testar')) {
-    return {
-      reply: 'Você pode testar acabamentos no nosso Simulador de Imagens clicando na aba acima! Lá você visualiza tons acetinados, emborrachados ou pedras Moledo em ambientes reais ou enviando foto do seu imóvel.\n\nGostou de alguma combinação? Fale com o Thales no WhatsApp para aplicar na sua parede!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um orçamento para pintar meu imóvel com os tons que simulei',
-    };
-  }
-
-  if (q.includes('ola') || q.includes('olá') || q.includes('oi') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('tudo bem') || q.includes('tudo bom') || q === 'oi' || q === 'ola') {
-    return {
-      reply: 'Olá! Sou o Cobalto, consultor técnico da Thales Pinturas. O Thales é reconhecido entre os Top 3 Melhores Pintores do Brasil (ABRAPP/MBPM). Cuidamos da pintura residencial e predial, revitalização de fachadas, aplicação de pedras e limpeza pós-obra.\n\nQual serviço você gostaria de realizar no seu imóvel?',
-      whatsappMessage: 'Olá, Thales! Gostaria de conhecer os serviços da Thales Pinturas',
-    };
-  }
-
-  if (q.includes('thales') || q.includes('premio') || q.includes('prêmio') || q.includes('abrapp') || q.includes('mbpm') || q.includes('destaque') || q.includes('experiencia') || q.includes('experiência')) {
-    return {
-      reply: 'O Thales possui mais de 10 anos de experiência prática e técnica, tendo sido premiado como Top 3 do Brasil no Prêmio Pintor Destaque Nacional (ABRAPP/MBPM) em Julho de 2026. É a garantia de que sua obra será entregue sem dores de cabeça, com proteção total e acabamento de alto padrão.\n\nQuer garantir sua obra com essa referência técnica? Chame o Thales agora no WhatsApp!',
-      whatsappMessage: 'Olá, Thales! Gostaria de um atendimento para o meu imóvel',
-    };
-  }
-
-  // Context-aware dynamic fallback
-  return {
-    reply: `Entendido sobre "${userQuery || 'sua solicitação'}". Como consultor técnico da Thales Pinturas, avaliamos tecnicamente cada detalhe para indicar o acabamento mais adequado, durável e com acabamento fino.\n\nPara analisarmos seu projeto com precisão e agendarmos sua visita, clique no botão e fale agora diretamente com o Thales no WhatsApp!`,
-    whatsappMessage: `Olá, Thales! Gostaria de falar sobre: ${userQuery || 'um orçamento para o meu imóvel'}`,
-  };
+  return process.env.HOST || '0.0.0.0';
 }
 
 async function startServer() {
+  const startTime = Date.now();
   const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
+  const PORT = getPort();
+  const HOST = getHost();
+
+  // Enable CORS for iframe / preview support
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    next();
+  });
 
   app.use(express.json());
+
+  // Health check endpoint for supervisor & monitoring
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', port: PORT, uptime: process.uptime() });
+  });
 
   // Shared server-side Gemini instance with telemetry User-Agent
   const ai = new GoogleGenAI({
@@ -189,22 +119,23 @@ async function startServer() {
         });
       }
 
-      // Call ultra-fast Gemini model (gemini-flash-lite-latest, gemini-3.5-flash-lite, gemini-3.1-flash-lite)
+      // Call ultra-fast Gemini model (gemini-2.5-flash, gemini-2.5-flash-lite)
       let replyText = '';
-      const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+      const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
       for (const modelName of candidateModels) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
 
           const response = await ai.models.generateContent({
             model: modelName,
             contents: normalizedMessages,
             config: {
               systemInstruction: SYSTEM_INSTRUCTION,
-              temperature: 0.7,
-              maxOutputTokens: 350,
+              temperature: 0.8,
+              maxOutputTokens: 2048,
+              thinkingConfig: { thinkingBudget: 512 },
               abortSignal: controller.signal,
             },
           });
@@ -219,10 +150,13 @@ async function startServer() {
         }
       }
 
+      // Clean any accidental markdown asterisks from the AI response
+      replyText = cleanAsterisks(replyText);
+
       // If Gemini did not return text, use expert technical fallback
       if (!replyText) {
         const fallback = generateCobaltoTechnicalFallback(userLastText);
-        replyText = fallback.reply;
+        replyText = cleanAsterisks(fallback.reply);
         return res.json({
           reply: replyText,
           suggestedWhatsAppMessage: fallback.whatsappMessage,
@@ -281,7 +215,7 @@ O usuário pesquisou: "${cleanQuery}"
 }`;
 
       let aiRawOutput = '';
-      const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+      const candidateModels = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
       for (const modelName of candidateModels) {
         try {
@@ -367,8 +301,12 @@ O usuário pesquisou: "${cleanQuery}"
     app.use(vite.middlewares);
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on port ${PORT}`);
+  app.listen(PORT, HOST, () => {
+    const elapsed = Date.now() - startTime;
+    console.log(`\n  VITE v6.2.0  ready in ${elapsed} ms\n`);
+    console.log(`  ➜  Local:   http://localhost:${PORT}/`);
+    console.log(`  ➜  Network: http://${HOST}:${PORT}/`);
+    console.log(`Server listening on ${HOST}:${PORT}\n`);
   });
 }
 

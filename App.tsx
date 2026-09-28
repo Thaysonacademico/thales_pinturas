@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import AwardSection from './components/AwardSection';
@@ -15,33 +15,27 @@ import TestimonialsSection from './components/TestimonialsSection';
 import SocialSection from './components/SocialSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
-import OpeningIntro from './components/OpeningIntro';
 import LateralAIAssistant from './components/LateralAIAssistant';
 import ImageLightboxModal from './components/ImageLightboxModal';
 
 const App: React.FC = () => {
-  const [introFinished, setIntroFinished] = useState(false);
-
   return (
     <div className="relative min-h-screen bg-[#FAF8F5] text-[#1F2220] selection:bg-[#1D2F29] selection:text-[#FAF8F5] cursor-default overflow-x-hidden">
-      {/* 1. Opening Animation (SVG Paint Roller revealing logo with fresh paint texture) */}
-      <OpeningIntro onComplete={() => setIntroFinished(true)} />
-
-      {/* 2. Fixed Architectural Navigation */}
+      {/* 1. Fixed Architectural Navigation */}
       <Navbar />
 
-      {/* 3. Agente Cobalto IA & Acesso Rápido ao WhatsApp (Lateral) */}
+      {/* 2. Agente Cobalto IA & Acesso Rápido ao WhatsApp (Lateral) */}
       <LateralAIAssistant />
 
-      {/* 4. Global Image Lightbox Modal */}
+      {/* 3. Global Image Lightbox Modal */}
       <ImageLightboxModal />
 
-      {/* 5. Main Content */}
+      {/* 4. Main Content */}
       <main>
-        {/* Hero Section with Top 3 Badge and Interactive Brush Reveal Image */}
+        {/* Hero Section */}
         <HeroSection />
 
-        {/* Oficial: Prêmio Pintor Destaque Nacional (Julho 2026 - ABRAPP / MBPM) */}
+        {/* Reconhecimento & Padrão de Acabamento em Itajaí */}
         <AwardSection />
 
         {/* Sobre o Profissional / Apresentação Técnica */}
@@ -66,7 +60,7 @@ const App: React.FC = () => {
         <ContactSection />
       </main>
 
-      {/* 6. Rodapé Institucional */}
+      {/* 5. Rodapé Institucional */}
       <Footer />
     </div>
   );

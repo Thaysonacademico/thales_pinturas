@@ -18,20 +18,12 @@ const HeroSection: React.FC = () => {
           
           {/* Main Copy Column - Compact Minimalista Confortável */}
           <div className="lg:col-span-6">
-            {/* Top 3 Badge Seal */}
-            <a
-              href="https://www.pintorabrapp.com.br/sobre"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#FAF8F5] hover:bg-[#F6EFEB] border border-[#BD6B3B]/60 text-[#14201C] text-[10px] font-semibold tracking-wider uppercase mb-3.5 shadow-2xs transition-all group"
-              title="Associação Brasileira dos Pintores Profissionais"
-            >
-              <span className="text-xs">🏆</span>
-              <span className="text-[#BD6B3B] font-bold">Top 3 do Brasil (ABRAPP / MBPM)</span>
-              <span className="text-[9px] text-[#8C7E72] pl-0.5 group-hover:text-[#BD6B3B]">
-                oficial ↗
-              </span>
-            </a>
+            {/* Top Quality Badge */}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#FAF8F5] border border-[#BD6B3B]/60 text-[#14201C] text-[10px] font-semibold tracking-wider uppercase mb-3.5 shadow-2xs">
+              <span className="text-xs">⭐</span>
+              <span className="text-[#BD6B3B] font-bold">Entre os Melhores de Itajaí & Região</span>
+              <span className="text-[9px] text-[#8C7E72] pl-0.5">• Alto Padrão</span>
+            </div>
 
             {/* Direct H1 Title */}
             <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#14201C] tracking-tight leading-tight mb-2.5">
